@@ -1,0 +1,260 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scheduling Calendar | Screenings4u Admin</title>
+
+  <link rel="stylesheet" href="assets/css/admin-lms.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/skeleton.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/themes/classic/theme.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/themes/classic/palette.css" />
+  <link rel="stylesheet" href="assets/css/admin-scheduling.css" />
+</head>
+<body>
+  <div class="admin-lms-app">
+    <aside id="admin-lms-sidebar-target"></aside>
+
+    <div class="admin-lms-main">
+      <header class="admin-lms-topbar">
+        <div class="admin-lms-topbar-left">
+          <button type="button" class="admin-sidebar-collapse" data-admin-sidebar-collapse aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="admin-page-context">
+            <div class="admin-page-eyebrow">Screenings4u Management Portal</div>
+            <h1>Scheduling</h1>
+          </div>
+        </div>
+
+        <div class="admin-lms-topbar-right">
+          <a class="admin-topbar-icon" href="admin-notifications.html" aria-label="Notifications">🔔</a>
+          <div class="admin-user-menu">
+            <button type="button" class="admin-user-menu-trigger" data-admin-user-menu-trigger>
+              <span class="admin-user-avatar">A</span>
+              <span class="admin-user-meta">
+                <strong data-admin-display-name>Administrator</strong>
+                <small>Administration</small>
+              </span>
+              <span aria-hidden="true">⌄</span>
+            </button>
+            <div class="admin-user-menu-panel" data-admin-user-menu-panel hidden>
+              <a href="https://screenings4u.com/">Main Website</a>
+              <a href="admin-account-access.html">Account Access</a>
+              <a href="admin-accounts.html">Accounts</a>
+              <button type="button" data-admin-logout>Logout</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="scheduling-page">
+        <section class="scheduler-commandbar" aria-label="Calendar controls">
+          <div class="scheduler-commandbar-primary">
+            <button class="scheduler-primary-btn" id="newAppointmentBtn" type="button">+ New Appointment</button>
+
+            <div class="scheduler-nav" aria-label="Calendar navigation">
+              <button type="button" id="calendarPrevBtn" class="scheduler-icon-btn" aria-label="Previous">‹</button>
+              <button type="button" id="calendarTodayBtn" class="scheduler-secondary-btn">Today</button>
+              <button type="button" id="calendarNextBtn" class="scheduler-icon-btn" aria-label="Next">›</button>
+            </div>
+
+            <h2 class="scheduler-range-title" id="calendarRangeTitle">Calendar</h2>
+          </div>
+
+          <div class="scheduler-view-switch" role="group" aria-label="Calendar view">
+            <button type="button" data-calendar-view="dayGridMonth" class="is-active">Month</button>
+            <button type="button" data-calendar-view="timeGridWeek">Week</button>
+            <button type="button" data-calendar-view="timeGridDay">Day</button>
+          </div>
+        </section>
+
+        <section class="scheduler-filterbar" aria-label="Calendar filters">
+          <label>
+            <span>Appointment type</span>
+            <select id="filterService">
+              <option value="">All appointment types</option>
+            </select>
+          </label>
+          <label>
+            <span>Staff</span>
+            <select id="filterStaff">
+              <option value="">All staff</option>
+            </select>
+          </label>
+          <label>
+            <span>Location</span>
+            <select id="filterLocation">
+              <option value="">All locations</option>
+            </select>
+          </label>
+          <label>
+            <span>Status</span>
+            <select id="filterStatus">
+              <option value="">All statuses</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="rescheduled">Rescheduled</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="no_show">No show</option>
+            </select>
+          </label>
+          <label class="scheduler-search-field">
+            <span>Search loaded appointments</span>
+            <input id="calendarSearch" type="search" placeholder="Name, email, tracking #" autocomplete="off" />
+          </label>
+          <button id="clearFiltersBtn" class="scheduler-link-btn" type="button">Clear filters</button>
+        </section>
+
+        <section class="scheduler-workspace">
+          <div class="scheduler-calendar-panel">
+            <div id="calendarLoading" class="scheduler-loading" hidden>
+              <div class="scheduler-spinner"></div>
+              <span>Loading appointments…</span>
+            </div>
+
+            <div id="schedulerEmptyConfig" class="scheduler-config-empty" hidden>
+              <div class="scheduler-config-empty-icon">📅</div>
+              <h3>No appointment types are configured yet</h3>
+              <p>The calendar is ready, but scheduling cannot begin until at least one active appointment type and its availability are configured.</p>
+              <a href="admin-scheduling-services.html" class="scheduler-primary-btn scheduler-inline-btn">Configure appointment types</a>
+            </div>
+
+            <div id="adminSchedulingCalendar"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="schedulerBackdrop" class="scheduler-backdrop" hidden></div>
+
+  <aside id="appointmentDrawer" class="appointment-drawer" aria-hidden="true" aria-label="Appointment details">
+    <div class="appointment-drawer-header">
+      <div>
+        <span class="drawer-eyebrow" id="drawerTracking">Appointment</span>
+        <h2 id="drawerTitle">Appointment details</h2>
+      </div>
+      <button type="button" id="closeDrawerBtn" class="scheduler-icon-btn" aria-label="Close">×</button>
+    </div>
+
+    <div class="appointment-drawer-body">
+      <div class="drawer-status-row">
+        <span id="drawerStatus" class="scheduler-status-pill">Scheduled</span>
+      </div>
+
+      <dl class="appointment-details-list">
+        <div><dt>Date</dt><dd id="drawerDate">—</dd></div>
+        <div><dt>Time</dt><dd id="drawerTime">—</dd></div>
+        <div><dt>Customer</dt><dd id="drawerCustomer">—</dd></div>
+        <div><dt>Email</dt><dd id="drawerEmail">—</dd></div>
+        <div><dt>Phone</dt><dd id="drawerPhone">—</dd></div>
+        <div><dt>Staff</dt><dd id="drawerStaff">—</dd></div>
+        <div><dt>Location</dt><dd id="drawerLocation">—</dd></div>
+        <div><dt>Booking source</dt><dd id="drawerSource">—</dd></div>
+      </dl>
+
+      <div class="drawer-action-stack">
+        <button type="button" id="rescheduleAppointmentBtn" class="scheduler-primary-btn">Reschedule Appointment</button>
+        <button type="button" id="cancelAppointmentBtn" class="scheduler-danger-btn">Cancel Appointment</button>
+      </div>
+    </div>
+  </aside>
+
+  <div id="appointmentModal" class="scheduler-modal" hidden role="dialog" aria-modal="true" aria-labelledby="appointmentModalTitle">
+    <div class="scheduler-modal-card">
+      <div class="scheduler-modal-header">
+        <div>
+          <span class="drawer-eyebrow" id="appointmentModalEyebrow">Admin Scheduling</span>
+          <h2 id="appointmentModalTitle">New Appointment</h2>
+        </div>
+        <button type="button" class="scheduler-icon-btn" id="closeAppointmentModalBtn" aria-label="Close">×</button>
+      </div>
+
+      <form id="appointmentForm" novalidate>
+        <input type="hidden" id="formMode" value="create" />
+        <input type="hidden" id="formAppointmentId" />
+
+        <div class="scheduler-form-grid">
+          <label class="scheduler-field scheduler-field-full">
+            <span>Appointment type *</span>
+            <select id="formService" required>
+              <option value="">Select appointment type</option>
+            </select>
+          </label>
+
+          <label class="scheduler-field">
+            <span>Date *</span>
+            <input id="formDate" type="date" required />
+          </label>
+
+          <label class="scheduler-field">
+            <span>Party size</span>
+            <input id="formPartySize" type="number" min="1" value="1" />
+          </label>
+
+          <label class="scheduler-field">
+            <span>Staff</span>
+            <select id="formStaff">
+              <option value="">Any available staff</option>
+            </select>
+          </label>
+
+          <label class="scheduler-field">
+            <span>Location</span>
+            <select id="formLocation">
+              <option value="">Any available location</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="scheduler-availability-block">
+          <div class="scheduler-availability-header">
+            <div>
+              <span class="scheduler-field-label">Available times *</span>
+              <small id="availabilityHint">Choose an appointment type and date.</small>
+            </div>
+            <button id="refreshAvailabilityBtn" type="button" class="scheduler-link-btn">Refresh</button>
+          </div>
+          <div id="availableSlots" class="scheduler-slot-grid"></div>
+        </div>
+
+        <div id="customerFields" class="scheduler-form-grid">
+          <label class="scheduler-field scheduler-field-full">
+            <span>Customer name *</span>
+            <input id="formCustomerName" type="text" maxlength="240" required />
+          </label>
+          <label class="scheduler-field">
+            <span>Email *</span>
+            <input id="formCustomerEmail" type="email" maxlength="320" required />
+          </label>
+          <label class="scheduler-field">
+            <span>Phone</span>
+            <input id="formCustomerPhone" type="tel" maxlength="80" />
+          </label>
+        </div>
+
+        <div id="schedulerFormError" class="scheduler-form-error" hidden></div>
+
+        <div class="scheduler-modal-footer">
+          <button type="button" id="cancelAppointmentModalBtn" class="scheduler-secondary-btn">Close</button>
+          <button type="submit" id="saveAppointmentBtn" class="scheduler-primary-btn">Schedule Appointment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@7.0.2/all/global.js"></script>
+
+  <script src="assets/js/supabase-config.js"></script>
+  <script src="assets/js/core-auth.js"></script>
+  <script src="assets/js/ui.js"></script>
+  <script src="assets/js/session-security.js"></script>
+  <script src="assets/js/portal-auth-guard.js"></script>
+  <script src="assets/js/admin-auth-guard.js"></script>
+  <script src="assets/js/admin-lms-sidebar.js"></script>
+  <script src="assets/js/admin-scheduling.js"></script>
+</body>
+</html>

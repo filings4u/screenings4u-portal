@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Appointment Types | Screenings4u</title>
+  <link rel="stylesheet" href="assets/css/admin-lms.css">
+  <link rel="stylesheet" href="assets/css/admin-scheduling-services.css">
+</head>
+<body>
+<div class="admin-lms-app">
+  <aside id="admin-lms-sidebar-target"></aside>
+  <main class="admin-lms-main">
+    <header class="admin-lms-topbar">
+      <button type="button" data-admin-sidebar-collapse aria-label="Collapse sidebar">☰</button>
+      <div><strong>Screenings4u Management Portal</strong><span> / Administration</span></div>
+      <div class="topbar-actions"><a href="admin-notifications.html">🔔</a><strong>Administrator</strong></div>
+    </header>
+
+    <section class="svc-page">
+      <div class="svc-heading">
+        <div>
+          <a class="svc-back" href="admin-online-meetings.html">← Scheduling Calendar</a>
+          <h1>Appointment Types</h1>
+          <p>Define what customers can schedule. Availability, staff, locations and resources are attached to each appointment type.</p>
+        </div>
+        <button id="newServiceBtn" class="primary-btn">+ New Appointment Type</button>
+      </div>
+
+      <div class="svc-toolbar">
+        <input id="serviceSearch" type="search" placeholder="Search appointment types">
+        <select id="serviceStatus"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      </div>
+
+      <div id="serviceMessage" class="message" hidden></div>
+      <div id="serviceLoading" class="loading">Loading appointment types…</div>
+      <div id="serviceGrid" class="service-grid" hidden></div>
+      <div id="serviceEmpty" class="empty" hidden>
+        <div class="empty-icon">📅</div>
+        <h2>No appointment types yet</h2>
+        <p>Create the first service customers or administrators can schedule.</p>
+        <button id="emptyNewBtn" class="primary-btn">Create Appointment Type</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="serviceBackdrop" class="modal-backdrop" hidden></div>
+<section id="serviceModal" class="service-modal" hidden aria-modal="true" role="dialog">
+  <form id="serviceForm">
+    <div class="modal-head">
+      <div><span class="eyebrow">SCHEDULING</span><h2 id="modalTitle">New Appointment Type</h2></div>
+      <button type="button" class="icon-btn" data-close>×</button>
+    </div>
+    <div class="modal-body">
+      <input id="serviceId" type="hidden">
+
+      <div class="form-section">
+        <h3>Appointment details</h3>
+        <div class="form-grid two">
+          <label class="span-2">Appointment type name<input id="name" required maxlength="180" placeholder="e.g. DOT Specimen Collection"></label>
+          <label>Category<input id="category" maxlength="120" placeholder="e.g. DOT Testing"></label>
+          <label>Appointment format<select id="appointmentType"><option value="in_person">In person</option><option value="online">Online / video</option><option value="phone">Phone</option><option value="hybrid">Hybrid</option></select></label>
+          <label class="span-2">Description<textarea id="description" rows="3" placeholder="Describe this appointment for administrators and customers."></textarea></label>
+          <label>Duration (minutes)<input id="duration" type="number" min="5" max="1440" value="60"></label>
+          <label>Slot interval (minutes)<input id="slotInterval" type="number" min="5" max="1440" value="30"></label>
+          <label>Capacity<input id="capacity" type="number" min="1" value="1"></label>
+          <label>Booking mode<select id="bookingMode"><option value="individual">Individual</option><option value="group">Group / capacity</option></select></label>
+          <label>Timezone<input id="timezone" value="America/Chicago"></label>
+          <label>Location mode<select id="locationMode"><option value="physical">Physical location</option><option value="virtual">Virtual</option><option value="customer">Customer location</option><option value="flexible">Flexible</option></select></label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Buffers & booking window</h3>
+        <div class="form-grid four">
+          <label>Buffer before<input id="bufferBefore" type="number" min="0" value="0"><small>minutes</small></label>
+          <label>Buffer after<input id="bufferAfter" type="number" min="0" value="0"><small>minutes</small></label>
+          <label>Minimum notice<input id="minimumNotice" type="number" min="0" value="1440"><small>minutes</small></label>
+          <label>Booking window<input id="bookingWindow" type="number" min="1" value="60"><small>days ahead</small></label>
+          <label>Max bookings/day<input id="maxPerDay" type="number" min="1" placeholder="No limit"></label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Customer booking policies</h3>
+        <div class="switch-grid">
+          <label><input id="allowCustomer" type="checkbox" checked><span><b>Customer booking</b><small>Customers can book this appointment type.</small></span></label>
+          <label><input id="autoConfirm" type="checkbox" checked><span><b>Auto-confirm</b><small>New bookings are confirmed automatically.</small></span></label>
+          <label><input id="allowReschedule" type="checkbox" checked><span><b>Allow rescheduling</b><small>Customers can change their appointment.</small></span></label>
+          <label><input id="allowCancel" type="checkbox" checked><span><b>Allow cancellation</b><small>Customers can cancel their appointment.</small></span></label>
+          <label><input id="requiresLogin" type="checkbox" checked><span><b>Require login</b><small>Customer must have an authenticated account.</small></span></label>
+          <label><input id="active" type="checkbox" checked><span><b>Active</b><small>Appointment type can be used by the scheduler.</small></span></label>
+        </div>
+        <div class="form-grid two policy-cutoffs">
+          <label>Reschedule cutoff (minutes)<input id="rescheduleCutoff" type="number" min="0" value="1440"></label>
+          <label>Cancellation cutoff (minutes)<input id="cancelCutoff" type="number" min="0" value="1440"></label>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Availability assignment</h3>
+        <p class="section-help">Select one or more schedules. The first selected schedule becomes the default.</p>
+        <div id="scheduleChoices" class="choice-list"></div>
+      </div>
+
+      <div class="form-section">
+        <h3>Staff assignment</h3>
+        <p class="section-help">Choose the staff members who can perform this appointment.</p>
+        <div id="staffChoices" class="choice-list"></div>
+      </div>
+
+      <div class="form-section">
+        <h3>Customer messages</h3>
+        <div class="form-grid">
+          <label>Instructions<textarea id="instructions" rows="3" placeholder="Instructions shown before or after booking."></textarea></label>
+          <label>Confirmation message<textarea id="confirmationMessage" rows="3" placeholder="Message shown after the appointment is booked."></textarea></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="secondary-btn" data-close>Cancel</button>
+      <button id="saveServiceBtn" type="submit" class="primary-btn">Save Appointment Type</button>
+    </div>
+  </form>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/core-auth.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/session-security.js"></script>
+<script src="assets/js/portal-auth-guard.js"></script>
+<script src="assets/js/admin-auth-guard.js"></script>
+<script src="assets/js/admin-lms-sidebar.js"></script>
+<script src="assets/js/admin-scheduling-services.js"></script>
+</body>
+</html>

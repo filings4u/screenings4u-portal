@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings | Screenings4u</title><link rel="stylesheet" href="assets/css/admin-lms.css"><link rel="stylesheet" href="assets/css/admin-scheduling-config.css"></head>
+<body data-schedule-page="settings"><div class="admin-lms-app"><aside id="admin-lms-sidebar-target"></aside><main class="admin-lms-main">
+<header class="admin-lms-topbar"><button type="button" data-admin-sidebar-collapse>☰</button><div><strong>Screenings4u Management Portal</strong><span> / Administration</span></div><div><strong>Administrator</strong></div></header>
+<section class="sched-page"><div class="sched-head"><div><a class="sched-back" href="admin-online-meetings.html">← Scheduling Calendar</a><h1>Settings</h1><p>Control global defaults used across the scheduling system.</p></div></div>
+<div id="pageMessage" class="message" hidden></div><div id="loading" class="loading">Loading…</div><div class="panel"><div class="panel-head"><h2>Global scheduling defaults</h2></div><form id="settingsForm" class="panel-body"><div class="settings-grid">
+<div class="setting-card"><label>Default timezone<input name="default_timezone" value="America/Chicago"></label></div>
+<div class="setting-card"><label>Default booking window (days)<input name="default_booking_window_days" type="number" min="1" value="60"></label></div>
+<div class="setting-card"><label>Default minimum notice (minutes)<input name="default_minimum_notice_minutes" type="number" min="0" value="1440"></label></div>
+<div class="setting-card"><label>Admin notification email<input name="admin_notification_email" type="email"></label></div>
+<div class="setting-card"><label>Customer portal URL<input name="customer_portal_url" type="url"></label></div>
+<div class="setting-card"><label>Public booking page URL<input name="booking_page_url" type="url"></label></div>
+<div class="setting-card"><label class="check"><input id="waitlist_enabled" type="checkbox" checked> Enable waitlist</label></div>
+<div class="setting-card"><label class="check"><input id="auto_offer_waitlist" type="checkbox"> Automatically offer openings</label></div>
+</div><div style="margin-top:18px"><button class="btn btn-primary">Save Settings</button></div></form></div></section></main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-config.js"></script><script src="assets/js/core-auth.js"></script><script src="assets/js/ui.js"></script>
+<script src="assets/js/session-security.js"></script><script src="assets/js/portal-auth-guard.js"></script><script src="assets/js/admin-auth-guard.js"></script>
+<script src="assets/js/admin-lms-sidebar.js"></script><script src="assets/js/admin-scheduling-config.js"></script></body></html>

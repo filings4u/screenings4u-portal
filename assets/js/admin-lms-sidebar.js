@@ -243,24 +243,64 @@ bindUserDropdown();
       label: "Scheduling",
       items: [
         {
-          label: "Phone Appointments",
-          href: "admin-phone-scheduling.html",
-          icon: "phone"
-        },
-        {
-          label: "In-Person Appointments",
-          href: "admin-in-person-scheduling.html",
+          label: "Calendar",
+          href: "admin-online-meetings.html",
           icon: "calendar"
         },
         {
-          label: "Online Meetings",
-          href: "admin-online-meetings.html",
-          icon: "video"
+          label: "Appointment Types",
+          href: "admin-scheduling-services.html",
+          icon: "clipboard"
         },
         {
-          label: "Microsoft Teams",
-          href: "admin-teams-meetings.html",
-          icon: "teams"
+          label: "Availability",
+          href: "admin-scheduling-availability.html",
+          icon: "history"
+        },
+        {
+          label: "Overrides",
+          href: "admin-scheduling-overrides.html",
+          icon: "manage"
+        },
+        {
+          label: "Staff",
+          href: "admin-scheduling-staff.html",
+          icon: "users"
+        },
+        {
+          label: "Time Off",
+          href: "admin-scheduling-time-off.html",
+          icon: "employee"
+        },
+        {
+          label: "Locations",
+          href: "admin-scheduling-locations.html",
+          icon: "building"
+        },
+        {
+          label: "Resources",
+          href: "admin-scheduling-resources.html",
+          icon: "folder"
+        },
+        {
+          label: "Booking Form",
+          href: "admin-scheduling-booking-form.html",
+          icon: "document"
+        },
+        {
+          label: "Notifications",
+          href: "admin-scheduling-notifications.html",
+          icon: "bell"
+        },
+        {
+          label: "Waitlist",
+          href: "admin-scheduling-waitlist.html",
+          icon: "selection"
+        },
+        {
+          label: "Settings",
+          href: "admin-scheduling-settings.html",
+          icon: "gear"
         }
       ]
     },
