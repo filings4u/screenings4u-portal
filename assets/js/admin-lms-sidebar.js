@@ -244,7 +244,7 @@ bindUserDropdown();
       items: [
         {
           label: "Calendar",
-          href: "admin-online-meetings.html",
+          href: "admin-scheduling.html",
           icon: "calendar"
         },
         {
@@ -301,6 +301,11 @@ bindUserDropdown();
           label: "Settings",
           href: "admin-scheduling-settings.html",
           icon: "gear"
+        },
+        {
+          label: "Reschedule Appointment",
+          href: "reschedule-appointment.html",
+          icon: "calendar"
         }
       ]
     },

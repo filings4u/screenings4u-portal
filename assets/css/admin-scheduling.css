@@ -194,6 +194,15 @@
   overflow: hidden;
 }
 
+
+/* Native hidden must win over shared portal display rules. */
+.scheduler-loading[hidden],
+.scheduler-modal[hidden],
+.scheduler-backdrop[hidden],
+.scheduler-config-empty[hidden] {
+  display: none !important;
+}
+
 .scheduler-loading {
   position: absolute;
   z-index: 20;
@@ -349,18 +358,77 @@
 .scheduler-availability-block { margin: 20px 0; padding: 16px; border: 1px solid var(--scheduler-border); border-radius: 10px; background: #f9fbfd; }
 .scheduler-availability-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 12px; }
 .scheduler-availability-header small { display: block; margin-top: 4px; color: var(--scheduler-muted); }
-.scheduler-slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)); gap: 8px; }
-.scheduler-slot {
-  min-height: 38px;
-  border: 1px solid var(--scheduler-border-strong);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--scheduler-text);
-  font-weight: 700;
-  cursor: pointer;
+.scheduler-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
 }
-.scheduler-slot:hover { border-color: var(--scheduler-primary); color: var(--scheduler-primary); }
-.scheduler-slot.is-selected { color: #fff; background: var(--scheduler-primary); border-color: var(--scheduler-primary); }
+
+/* High-specificity rules intentionally protect slot controls from shared admin button styles. */
+#availableSlots .scheduler-slot {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0 !important;
+  padding: 9px 14px !important;
+  border: 1px solid #b8c7dc !important;
+  border-radius: 9px !important;
+  background: #ffffff !important;
+  color: #17324f !important;
+  box-shadow: 0 1px 2px rgba(22, 50, 79, 0.04) !important;
+  font: inherit !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  text-align: center;
+  cursor: pointer !important;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease, box-shadow .15s ease, transform .05s ease;
+}
+
+#availableSlots .scheduler-slot:hover {
+  border-color: var(--scheduler-primary) !important;
+  background: #f4f8fd !important;
+  color: var(--scheduler-primary) !important;
+  box-shadow: 0 0 0 3px rgba(18, 75, 142, .08) !important;
+}
+
+#availableSlots .scheduler-slot:focus-visible {
+  outline: none !important;
+  border-color: var(--scheduler-primary) !important;
+  box-shadow: 0 0 0 3px rgba(18, 75, 142, .18) !important;
+}
+
+#availableSlots .scheduler-slot.is-selected,
+#availableSlots .scheduler-slot[aria-pressed="true"] {
+  border-color: var(--scheduler-primary) !important;
+  background: var(--scheduler-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(18, 75, 142, .16) !important;
+}
+
+#availableSlots .scheduler-slot.is-selected::after,
+#availableSlots .scheduler-slot[aria-pressed="true"]::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+#availableSlots .scheduler-slot:active {
+  transform: translateY(1px);
+}
+
+#saveAppointmentBtn:disabled {
+  opacity: .5;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
 .scheduler-no-slots { grid-column: 1/-1; padding: 14px; text-align: center; color: var(--scheduler-muted); }
 .scheduler-form-error { margin-top: 16px; padding: 11px 12px; border: 1px solid #fecaca; border-radius: 8px; background: #fff1f2; color: #9f1239; font-size: 13px; }
 .scheduler-modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--scheduler-border); }
@@ -387,11 +455,37 @@
 }
 
 
-/* Respect the native hidden attribute.
-   Shared/admin display rules must never force hidden scheduler UI visible. */
-.scheduler-loading[hidden],
-.scheduler-modal[hidden],
-.scheduler-backdrop[hidden],
-.scheduler-config-empty[hidden] {
-  display: none !important;
+/* Slot control hardening for the canonical admin shell. */
+#appointmentModal #availableSlots {
+  position: relative;
+  z-index: 1;
+}
+
+#appointmentModal #availableSlots > button.scheduler-slot {
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  touch-action: manipulation;
+  opacity: 1 !important;
+  min-width: 0 !important;
+}
+
+#appointmentModal #availableSlots > button.scheduler-slot[data-selected="true"],
+#appointmentModal #availableSlots > button.scheduler-slot.is-selected,
+#appointmentModal #availableSlots > button.scheduler-slot[aria-pressed="true"] {
+  background-color: #124b8e !important;
+  background-image: none !important;
+  border-color: #124b8e !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+#appointmentModal #availableSlots > button.scheduler-slot[data-selected="true"]::after,
+#appointmentModal #availableSlots > button.scheduler-slot.is-selected::after,
+#appointmentModal #availableSlots > button.scheduler-slot[aria-pressed="true"]::after {
+  content: "✓";
+  display: inline-block;
+  margin-left: 4px;
+  color: #ffffff !important;
+  font-weight: 900;
 }

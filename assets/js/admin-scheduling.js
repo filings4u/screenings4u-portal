@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  console.info("[Admin Scheduling v5] FullCalendar 7 compatible build loaded.");
+  console.info("[Admin Scheduling v7] FullCalendar 7.0.2 loading-state fix loaded.");
 
   const state = {
     calendar: null,
@@ -12,6 +12,7 @@
     visibleAppointments: [],
     selectedAppointment: null,
     selectedSlot: null,
+    availableSlots: [],
     loadingCalendar: false,
     initialized: false,
   };
@@ -170,7 +171,20 @@
 
   function setLoading(value) {
     state.loadingCalendar = value;
-    $("calendarLoading").hidden = !value;
+    const loading = $("calendarLoading");
+    if (!loading) return;
+
+    loading.hidden = !value;
+    loading.setAttribute("aria-hidden", value ? "false" : "true");
+
+    // Shared admin styles may override the native [hidden] attribute.
+    // Enforce the actual visual state so the calendar can never remain
+    // covered by a stale loading overlay.
+    if (value) {
+      loading.style.removeProperty("display");
+    } else {
+      loading.style.setProperty("display", "none", "important");
+    }
   }
 
   function showFormError(message) {
@@ -251,6 +265,7 @@
     $("availableSlots").innerHTML = "";
     $("availabilityHint").textContent = "Choose an appointment type and date.";
     $("saveAppointmentBtn").textContent = "Schedule Appointment";
+    $("saveAppointmentBtn").disabled = true;
     $("appointmentModalTitle").textContent = "New Appointment";
     $("appointmentModalEyebrow").textContent = "Admin Scheduling";
     $("formService").disabled = false;
@@ -442,11 +457,36 @@
       },
     });
     state.calendar.render();
+
+  }
+
+  function selectAvailableSlot(index, button) {
+    const slot = state.availableSlots[index];
+    if (!slot?.slot_start || !button) {
+      showFormError("That appointment time is no longer available. Refresh the available times and try again.");
+      return false;
+    }
+
+    const slotsEl = $("availableSlots");
+    slotsEl.querySelectorAll("button.scheduler-slot").forEach((item) => {
+      const selected = item === button;
+      item.classList.toggle("is-selected", selected);
+      item.setAttribute("aria-pressed", selected ? "true" : "false");
+      item.dataset.selected = selected ? "true" : "false";
+    });
+
+    state.selectedSlot = slot;
+    clearFormError();
+    $("saveAppointmentBtn").disabled = false;
+    $("availabilityHint").textContent = `${button.dataset.timeLabel || button.textContent.replace("✓", "").trim()} selected.`;
+    return true;
   }
 
   async function loadAvailability() {
     clearFormError();
     state.selectedSlot = null;
+    state.availableSlots = [];
+    $("saveAppointmentBtn").disabled = true;
     const serviceId = $("formService").value;
     const date = $("formDate").value;
     const slotsEl = $("availableSlots");
@@ -479,23 +519,30 @@
         return;
       }
 
-      $("availabilityHint").textContent = `${slots.length} available time${slots.length === 1 ? "" : "s"}.`;
+      state.availableSlots = slots;
+      $("availabilityHint").textContent = `${slots.length} available time${slots.length === 1 ? "" : "s"}. Select a time below.`;
       slotsEl.innerHTML = "";
-      slots.forEach((slot) => {
+      slots.forEach((slot, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "scheduler-slot";
+        button.dataset.slotIndex = String(index);
+        button.dataset.slotStart = slot.slot_start;
+        button.dataset.selected = "false";
+        button.setAttribute("aria-pressed", "false");
         const tz = slot.timezone || serviceById(serviceId)?.timezone || undefined;
         button.textContent = new Intl.DateTimeFormat("en-US", {
           timeZone: tz,
           hour: "numeric",
           minute: "2-digit",
+          hour12: true,
         }).format(new Date(slot.slot_start));
+        button.dataset.timeLabel = button.textContent;
         button.title = slot.staff_name ? `${button.textContent} — ${slot.staff_name}` : button.textContent;
-        button.addEventListener("click", () => {
-          slotsEl.querySelectorAll(".scheduler-slot").forEach((b) => b.classList.remove("is-selected"));
-          button.classList.add("is-selected");
-          state.selectedSlot = slot;
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          selectAvailableSlot(index, button);
         });
         slotsEl.append(button);
       });
@@ -556,7 +603,7 @@
     } catch (error) {
       showFormError(error.message || "Unable to save appointment.");
     } finally {
-      button.disabled = false;
+      button.disabled = !state.selectedSlot?.slot_start;
       button.textContent = originalText;
     }
   }
@@ -621,8 +668,23 @@
       $(id).addEventListener("change", loadAvailability);
     });
     $("refreshAvailabilityBtn").addEventListener("click", loadAvailability);
+
+    // Delegate slot selection from the container so dynamically generated times
+    // remain reliably clickable after every availability refresh.
+    $("availableSlots").addEventListener("click", (event) => {
+      const button = event.target.closest("button.scheduler-slot");
+      if (!button || !$("availableSlots").contains(button)) return;
+
+      event.preventDefault();
+      const index = Number(button.dataset.slotIndex);
+      selectAvailableSlot(index, button);
+    });
+
     $("rescheduleAppointmentBtn").addEventListener("click", openRescheduleModal);
     $("cancelAppointmentBtn").addEventListener("click", cancelSelectedAppointment);
+
+    window.addEventListener("resize", () => {
+    });
 
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
