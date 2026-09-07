@@ -219,6 +219,28 @@
 </form>
 </section>
 
+
+<div class="modal-backdrop" hidden id="deleteServiceBackdrop"></div>
+<section class="service-delete-modal" hidden id="deleteServiceModal" role="dialog" aria-modal="true" aria-labelledby="deleteServiceTitle">
+    <div class="delete-modal-head">
+        <div>
+            <span class="eyebrow danger-eyebrow">DELETE APPOINTMENT TYPE</span>
+            <h2 id="deleteServiceTitle">Delete this appointment type?</h2>
+        </div>
+        <button class="icon-btn" id="closeDeleteService" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="delete-modal-body">
+        <p id="deleteServiceCopy"></p>
+        <div class="delete-warning">
+            This permanently removes the appointment type and its scheduling assignments. Existing appointment history is preserved.
+        </div>
+    </div>
+    <div class="delete-modal-foot">
+        <button class="secondary-btn" id="cancelDeleteService" type="button">Keep Appointment Type</button>
+        <button class="danger-btn" id="confirmDeleteService" type="button">Delete Appointment Type</button>
+    </div>
+</section>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/js/supabase-config.js"></script>
 <script src="assets/js/core-auth.js"></script>
@@ -228,6 +250,6 @@
 <script src="assets/js/admin-auth-guard.js"></script>
 <script src="assets/js/admin-lms-sidebar.js"></script>
 <script src="assets/js/admin-dashboard.js"></script>
-<script src="assets/js/admin-scheduling-services.js"></script>
+<script src="assets/js/admin-scheduling-services.js?v=20260907-0035"></script>
 </body>
 </html>
