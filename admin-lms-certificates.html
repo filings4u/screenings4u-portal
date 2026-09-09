@@ -30,6 +30,13 @@
 <section id="preview" class="preview"><div class="preview-head"><h2>Certificate Preview</h2><button id="closePreview" class="close">×</button></div><div class="certificate"><div class="cert-brand">Screenings4u Learning Center</div><h3>CERTIFICATE OF COMPLETION</h3><div class="cert-present">This certificate is proudly presented to</div><div class="cert-name" id="certName">Taylor Johnson</div><div class="cert-present">for successfully completing</div><div class="cert-course" id="certCourse">DOT Specimen Collector Training + Hair</div><div class="cert-meta"><div>Certificate ID<strong id="certId">CERT-2026-00481</strong></div><div>Date Issued<strong id="certDate">August 20, 2026</strong></div><div>Verified Training Record<strong>SCREENINGS4U</strong></div></div></div></section>
 <section class="settings-note"><h2>Automatic Certificate Flow</h2><p>When wired, a learner should become certificate-eligible only after completing all required modules, quizzes, and the final assessment. The system can then generate a unique certificate record, make the branded certificate available on <strong>lms-certificates.html</strong>, and provide a print-ready download.</p></section>
 </section></main></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/core-auth.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/session-security.js"></script>
+<script src="assets/js/portal-auth-guard.js"></script>
+<script src="assets/js/admin-auth-guard.js"></script>
 <script src="assets/js/admin-lms-sidebar.js"></script>
 <script>
 (function(){"use strict";var search=document.getElementById("search"),filter=document.getElementById("courseFilter"),rows=[].slice.call(document.querySelectorAll(".cert-row")),empty=document.getElementById("empty"),count=document.getElementById("count"),preview=document.getElementById("preview");

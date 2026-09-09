@@ -845,7 +845,7 @@
 
                         <a
                             class="random-row-button"
-                            href="admin-dot-random-selections.html?program=${encodeURIComponent(program.id)}"
+                            href="admin-random-selections.html?program=${encodeURIComponent(program.id)}"
                         >
                             Selections
                         </a>

@@ -38,6 +38,13 @@
 <div id="empty" class="empty">No learner progress records match your current filters.</div><div class="footer"><span id="count">Showing 4 learner records</span><span>Live lesson and quiz completion data will populate during wiring.</span></div></section>
 <section id="detail" class="detail"><div class="detail-head"><div><h2 id="detailTitle">Learner Progress</h2><p id="detailSub"></p></div><button id="closeDetail" class="close">×</button></div><div class="module-list"><div class="module"><div class="module-num">1</div><div><strong>Course Introduction</strong><span>Course overview and learner requirements</span></div><span class="module-state done">COMPLETED</span></div><div class="module"><div class="module-num">2</div><div><strong>Collection Procedures</strong><span>Core collection process and documentation</span></div><span class="module-state done">COMPLETED</span></div><div class="module"><div class="module-num">3</div><div><strong>Compliance Knowledge</strong><span>DOT requirements and responsibilities</span></div><span class="module-state" id="dynamicState">IN PROGRESS</span></div><div class="module"><div class="module-num">4</div><div><strong>Final Assessment</strong><span>Knowledge assessment required before certification</span></div><span class="module-state">LOCKED / PENDING</span></div></div></section>
 </section></main></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/js/supabase-config.js"></script>
+<script src="assets/js/core-auth.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/session-security.js"></script>
+<script src="assets/js/portal-auth-guard.js"></script>
+<script src="assets/js/admin-auth-guard.js"></script>
 <script src="assets/js/admin-lms-sidebar.js"></script>
 <script>
 (function(){"use strict";var search=document.getElementById("search"),course=document.getElementById("courseFilter"),status=document.getElementById("statusFilter"),rows=[].slice.call(document.querySelectorAll(".progress-row")),empty=document.getElementById("empty"),count=document.getElementById("count");

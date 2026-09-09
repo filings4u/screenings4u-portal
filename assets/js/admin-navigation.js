@@ -178,8 +178,8 @@ function getAdminNavigationMarkup() {
           </a>
 
           <a
-            href="${prefix}admin-dot-random-selections.html"
-            data-nav-page="admin-dot-random-selections.html"
+            href="${prefix}admin-random-selections.html"
+            data-nav-page="admin-random-selections.html"
           >
             Random Selection
           </a>
@@ -352,8 +352,8 @@ function getAdminNavigationMarkup() {
           </a>
 
           <a
-            href="${prefix}admin-ticket-center.html"
-            data-nav-page="admin-ticket-center.html"
+            href="${prefix}admin-support-tickets.html"
+            data-nav-page="admin-support-tickets.html"
           >
             Support
           </a>
