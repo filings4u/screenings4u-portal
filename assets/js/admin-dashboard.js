@@ -22,6 +22,11 @@
       backfillButton.addEventListener("click", () => runTeamsBackfill(client));
     }
 
+    const migrationNoticeButton = document.getElementById("sendLiveTrainingMigrationNotices");
+    if (migrationNoticeButton) {
+      migrationNoticeButton.addEventListener("click", () => sendLiveTrainingMigrationNotices(client));
+    }
+
     try {
       await loadDashboard(client);
     } catch (error) {
@@ -89,6 +94,49 @@
       console.error("Teams calendar backfill failed:", error);
       status.textContent = `Backfill failed — ${error?.message || "unknown error"}`;
       window.alert(`Teams calendar backfill failed: ${error?.message || "Unknown error"}`);
+      setTimeout(() => { status.textContent = original; }, 10000);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function sendLiveTrainingMigrationNotices(client) {
+    const button = document.getElementById("sendLiveTrainingMigrationNotices");
+    const status = document.getElementById("liveTrainingMigrationStatus");
+    if (!button || !status) return;
+
+    if (!window.confirm("Send the Live Training system update email now to students whose appointments were successfully backfilled? Each appointment can only be sent once.")) return;
+
+    const original = status.textContent;
+    button.disabled = true;
+    status.textContent = "Sending Live Training update emails…";
+
+    try {
+      const { data, error } = await client.functions.invoke("scheduling-live-training-migration-notice", { body: {} });
+      if (error) {
+        let message = error.message || "Notification request failed.";
+        try {
+          const response = error.context;
+          if (response?.clone) {
+            const body = await response.clone().json();
+            if (body?.error) message = body.error;
+          }
+        } catch (_) {}
+        throw new Error(message);
+      }
+      if (data?.error) throw new Error(data.error);
+
+      const processed = Number(data?.processed || 0);
+      const sent = Number(data?.sent || 0);
+      const skipped = Number(data?.skipped || 0);
+      const failed = Number(data?.failed || 0);
+      status.textContent = `Complete — ${sent} sent, ${skipped} skipped, ${failed} failed.`;
+      console.log("Live Training migration notice result:", data);
+      window.alert(`Live Training update emails complete.\n\nSent: ${sent}\nSkipped: ${skipped}\nFailed: ${failed}\nProcessed: ${processed}`);
+    } catch (error) {
+      console.error("Live Training migration notices failed:", error);
+      status.textContent = `Email send failed — ${error?.message || "unknown error"}`;
+      window.alert(`Live Training update emails failed: ${error?.message || "Unknown error"}`);
       setTimeout(() => { status.textContent = original; }, 10000);
     } finally {
       button.disabled = false;
