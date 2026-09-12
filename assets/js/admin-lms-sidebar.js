@@ -139,6 +139,63 @@ bindUserDropdown();
     },
 
     {
+      id: "compliance-platform",
+      label: "Compliance Platform",
+      items: [
+        {
+          label: "Platform Dashboard",
+          href: "admin-compliance-platform.html",
+          icon: "dashboard"
+        },
+        {
+          label: "Companies",
+          href: "admin-compliance-companies.html",
+          icon: "building"
+        },
+        {
+          label: "Employees / Drivers",
+          href: "admin-compliance-employees.html",
+          icon: "employee"
+        },
+        {
+          label: "Testing Programs",
+          href: "admin-compliance-programs.html",
+          icon: "clipboard"
+        },
+        {
+          label: "Random Pools",
+          href: "admin-compliance-pools.html",
+          icon: "random"
+        },
+        {
+          label: "Random Selections",
+          href: "admin-compliance-selections.html",
+          icon: "selection"
+        },
+        {
+          label: "Testing Orders",
+          href: "admin-compliance-testing-orders.html",
+          icon: "clipboard"
+        },
+        {
+          label: "Results",
+          href: "admin-compliance-results.html",
+          icon: "document"
+        },
+        {
+          label: "Documents",
+          href: "admin-compliance-documents.html",
+          icon: "document"
+        },
+        {
+          label: "Subscriptions & Plans",
+          href: "admin-compliance-subscriptions.html",
+          icon: "invoice"
+        }
+      ]
+    },
+
+    {
       id: "training",
       label: "Training",
       items: [

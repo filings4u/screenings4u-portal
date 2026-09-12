@@ -17,6 +17,11 @@
       return;
     }
 
+    const backfillButton = document.getElementById("runTeamsBackfill");
+    if (backfillButton) {
+      backfillButton.addEventListener("click", () => runTeamsBackfill(client));
+    }
+
     try {
       await loadDashboard(client);
     } catch (error) {
@@ -43,6 +48,51 @@
     }
 
     return null;
+  }
+
+
+  async function runTeamsBackfill(client) {
+    const button = document.getElementById("runTeamsBackfill");
+    const status = document.getElementById("teamsBackfillStatus");
+    if (!button || !status) return;
+
+    if (!window.confirm("Create calendar-backed Microsoft Teams meetings for all eligible future training appointments? No student notification emails will be sent by this action.")) return;
+
+    const original = status.textContent;
+    button.disabled = true;
+    status.textContent = "Running secure Teams calendar backfill…";
+
+    try {
+      const { data, error } = await client.functions.invoke("scheduling-teams-backfill", {
+        body: { execute: true }
+      });
+      if (error) {
+        let message = error.message || "Backfill request failed.";
+        try {
+          const response = error.context;
+          if (response?.clone) {
+            const body = await response.clone().json();
+            if (body?.error) message = body.error;
+          }
+        } catch (_) {}
+        throw new Error(message);
+      }
+      if (data?.error) throw new Error(data.error);
+
+      const processed = Number(data?.processed || 0);
+      const backfilled = Number(data?.backfilled || 0);
+      const failed = Number(data?.failed || 0);
+      status.textContent = `Complete — ${backfilled} backfilled, ${failed} failed (${processed} processed).`;
+      console.log("Teams calendar backfill result:", data);
+      window.alert(`Teams calendar backfill complete.\n\nBackfilled: ${backfilled}\nFailed: ${failed}\nProcessed: ${processed}\n\nNo student notification emails were sent.`);
+    } catch (error) {
+      console.error("Teams calendar backfill failed:", error);
+      status.textContent = `Backfill failed — ${error?.message || "unknown error"}`;
+      window.alert(`Teams calendar backfill failed: ${error?.message || "Unknown error"}`);
+      setTimeout(() => { status.textContent = original; }, 10000);
+    } finally {
+      button.disabled = false;
+    }
   }
 
   async function loadDashboard(client) {
