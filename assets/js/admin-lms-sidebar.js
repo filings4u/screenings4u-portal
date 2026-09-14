@@ -228,6 +228,26 @@ bindUserDropdown();
           href: "admin-lms-video.html",
           icon: "video"
         },
+        {
+          label: "Students",
+          href: "admin-lms-students.html",
+          icon: "users"
+        },
+        {
+          label: "Enrollments",
+          href: "admin-lms-enrollments.html",
+          icon: "clipboard"
+        },
+        {
+          label: "Student Progress",
+          href: "admin-lms-progress.html",
+          icon: "results"
+        },
+        {
+          label: "Certificates",
+          href: "admin-lms-certificates.html",
+          icon: "document"
+        },
       ]
     },
 
