@@ -59,61 +59,19 @@
 </div>
 
 <section class="enrollment-stats">
-<article class="stat-card"><label>Total Enrollments</label><strong>312</strong><span>Across all training courses</span></article>
-<article class="stat-card"><label>Active Enrollments</label><strong>96</strong><span>Learners currently in training</span></article>
-<article class="stat-card"><label>Completed</label><strong>127</strong><span>Training requirements completed</span></article>
-<article class="stat-card"><label>Not Started</label><strong>89</strong><span>Access granted, training pending</span></article>
+<article class="stat-card"><label>Total Enrollments</label><strong id="statTotal">—</strong><span>Live LMS enrollment records</span></article>
+<article class="stat-card"><label>Active Enrollments</label><strong id="statActive">—</strong><span>Learners with active course access</span></article>
+<article class="stat-card"><label>Completed</label><strong id="statCompleted">—</strong><span>Completed training enrollments</span></article>
+<article class="stat-card"><label>Not Started</label><strong id="statNotStarted">—</strong><span>Active enrollments with 0% progress</span></article>
 </section>
-
+<div id="enrollmentNotice" class="empty" style="display:none;padding:14px 18px;margin-bottom:16px;text-align:left;border-radius:10px"></div>
 <section class="enrollment-card">
-<div class="toolbar">
-<div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg><input id="enrollmentSearch" type="search" placeholder="Search learner or course..."></div>
-<select id="courseFilter" class="filter"><option value="all">All Courses</option><option value="dot">DOT Specimen Collector</option><option value="hair">DOT + Hair Collection</option><option value="trainer">Train the Trainer</option></select>
-<select id="statusFilter" class="filter"><option value="all">All Statuses</option><option value="active">Active</option><option value="completed">Completed</option><option value="pending">Not Started</option></select>
-</div>
-
-<div id="enrollmentList">
-<article class="enrollment-row" data-search="Jordan Williams jordan.williams@example.com DOT Specimen Collector Training" data-course="dot" data-status="active">
-<div class="person"><div class="avatar">JW</div><div><strong>Jordan Williams</strong><span>jordan.williams@example.com</span></div></div>
-<div class="course"><strong>DOT Specimen Collector Training</strong><span>Purchased training access</span></div>
-<div class="date-cell">Aug 14, 2026<small>Enrollment date</small></div>
-<div><span class="status active">ACTIVE</span></div>
-<div class="actions"><button class="action manage-btn">Manage</button><button class="action remove-btn">Remove</button></div>
-</article>
-
-<article class="enrollment-row" data-search="Taylor Johnson taylor.johnson@example.com DOT Specimen Collector Training Hair" data-course="hair" data-status="completed">
-<div class="person"><div class="avatar">TJ</div><div><strong>Taylor Johnson</strong><span>taylor.johnson@example.com</span></div></div>
-<div class="course"><strong>DOT Specimen Collector + Hair</strong><span>Purchased training access</span></div>
-<div class="date-cell">Jul 10, 2026<small>Enrollment date</small></div>
-<div><span class="status completed">COMPLETED</span></div>
-<div class="actions"><button class="action manage-btn">Manage</button><button class="action remove-btn">Remove</button></div>
-</article>
-
-<article class="enrollment-row" data-search="Morgan Davis morgan.davis@example.com DOT Train the Trainer" data-course="trainer" data-status="active">
-<div class="person"><div class="avatar">MD</div><div><strong>Morgan Davis</strong><span>morgan.davis@example.com</span></div></div>
-<div class="course"><strong>DOT Specimen Collector Train the Trainer</strong><span>Administrative enrollment</span></div>
-<div class="date-cell">Aug 8, 2026<small>Enrollment date</small></div>
-<div><span class="status active">ACTIVE</span></div>
-<div class="actions"><button class="action manage-btn">Manage</button><button class="action remove-btn">Remove</button></div>
-</article>
-
-<article class="enrollment-row" data-search="Casey Brown casey.brown@example.com DOT Specimen Collector Training" data-course="dot" data-status="pending">
-<div class="person"><div class="avatar">CB</div><div><strong>Casey Brown</strong><span>casey.brown@example.com</span></div></div>
-<div class="course"><strong>DOT Specimen Collector Training</strong><span>Checkout enrollment</span></div>
-<div class="date-cell">Aug 25, 2026<small>Enrollment date</small></div>
-<div><span class="status pending">NOT STARTED</span></div>
-<div class="actions"><button class="action manage-btn">Manage</button><button class="action remove-btn">Remove</button></div>
-</article>
-</div>
-
-<div id="emptyState" class="empty">No enrollments match your current search or filters.</div>
-<div class="table-footer"><span id="enrollmentCount">Showing 4 enrollments</span><span>Checkout purchases will create live enrollments when the system is wired.</span></div>
+<div class="toolbar"><div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg><input id="enrollmentSearch" type="search" placeholder="Search learner or course..."></div><select id="courseFilter" class="filter"><option value="all">All Courses</option></select><select id="statusFilter" class="filter"><option value="all">All Statuses</option><option value="active">Active</option><option value="completed">Completed</option><option value="not-started">Not Started</option></select></div>
+<div id="enrollmentLoading" style="padding:40px;text-align:center;color:var(--admin-muted);font-size:12px">Loading live enrollments…</div>
+<div id="enrollmentList"></div><div id="emptyState" class="empty">No live enrollments match your current filters.</div>
+<div class="table-footer"><span id="enrollmentCount">Showing 0 enrollments</span><span>Live data from lms_enrollments</span></div>
 </section>
-
-<section class="info-panel">
-<div class="info-icon">↗</div>
-<div><h2>Enrollment Flow</h2><p>New course purchases should create an enrollment after successful checkout. Administrators can also manually grant access when needed. Active enrollments give learners access through My Learning; completed enrollments retain the learner's progress and certificate history.</p></div>
-</section>
+<section class="info-panel"><div class="info-icon">↗</div><div><h2>Enrollment Flow</h2><p>Paid training purchases create LMS enrollment records automatically. Administrators can also grant course access manually. This page displays only real records stored in Supabase.</p></div></section>
 </section>
 </main>
 </div>
@@ -122,9 +80,9 @@
 <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 <div class="modal-head"><h2 id="modalTitle">Enroll a Student</h2><button type="button" class="modal-close" id="closeEnrollmentModal">×</button></div>
 <div class="modal-body">
-<div class="field"><label>Student</label><select id="studentSelect"><option value="">Select an existing student</option><option>Jordan Williams</option><option>Taylor Johnson</option><option>Morgan Davis</option><option>Casey Brown</option></select></div>
-<div class="field"><label>Course</label><select id="newCourseSelect"><option value="">Select a course</option><option value="dot">DOT Specimen Collector Training</option><option value="hair">DOT Specimen Collector Training + Hair</option><option value="trainer">DOT Specimen Collector Train the Trainer</option><option value="trainer-hair">DOT Collector Train the Trainer + Hair</option></select></div>
-<div class="field"><label>Enrollment Source</label><select id="sourceSelect"><option>Administrative enrollment</option><option>Purchased training access</option></select></div>
+<div class="field"><label>Student</label><select id="studentSelect"><option value="">Loading students…</option></select></div>
+<div class="field"><label>Course</label><select id="newCourseSelect"><option value="">Loading courses…</option></select></div>
+<div class="field"><label>Enrollment Source</label><input value="Administrative enrollment" disabled></div>
 </div>
 <div class="modal-actions"><button type="button" class="admin-secondary-btn" id="cancelEnrollment">Cancel</button><button type="button" class="admin-primary-btn" id="saveEnrollment">Grant Access</button></div>
 </div>
@@ -138,53 +96,6 @@
 <script src="assets/js/portal-auth-guard.js"></script>
 <script src="assets/js/admin-auth-guard.js"></script>
 <script src="assets/js/admin-lms-sidebar.js"></script>
-<script>
-(function(){
-"use strict";
-var search=document.getElementById("enrollmentSearch"),course=document.getElementById("courseFilter"),status=document.getElementById("statusFilter");
-var list=document.getElementById("enrollmentList"),rows=[].slice.call(list.querySelectorAll(".enrollment-row")),empty=document.getElementById("emptyState"),count=document.getElementById("enrollmentCount");
-function filter(){
-var term=search.value.toLowerCase().trim(),visible=0;
-[].slice.call(list.querySelectorAll(".enrollment-row")).forEach(function(row){
-var show=(!term||row.dataset.search.toLowerCase().indexOf(term)>-1)&&(course.value==="all"||row.dataset.course===course.value)&&(status.value==="all"||row.dataset.status===status.value);
-row.style.display=show?"grid":"none";if(show)visible++;
-});
-empty.style.display=visible?"none":"block";count.textContent="Showing "+visible+" enrollment"+(visible===1?"":"s");
-}
-search.addEventListener("input",filter);course.addEventListener("change",filter);status.addEventListener("change",filter);
-
-var modal=document.getElementById("enrollmentModal");
-function openModal(){modal.classList.add("show");modal.setAttribute("aria-hidden","false");}
-function closeModal(){modal.classList.remove("show");modal.setAttribute("aria-hidden","true");}
-document.getElementById("openEnrollmentModal").onclick=openModal;
-document.getElementById("closeEnrollmentModal").onclick=closeModal;
-document.getElementById("cancelEnrollment").onclick=closeModal;
-modal.addEventListener("click",function(e){if(e.target===modal)closeModal();});
-
-document.getElementById("saveEnrollment").onclick=function(){
-var student=document.getElementById("studentSelect").value,courseSelect=document.getElementById("newCourseSelect"),courseValue=courseSelect.value,courseName=courseSelect.options[courseSelect.selectedIndex].text,source=document.getElementById("sourceSelect").value;
-if(!student||!courseValue){alert("Please select a student and a course.");return;}
-var initials=student.split(" ").map(function(x){return x[0];}).join("").slice(0,2).toUpperCase();
-var row=document.createElement("article");
-row.className="enrollment-row";
-row.dataset.search=student+" "+courseName;
-row.dataset.course=courseValue==="trainer-hair"?"trainer":courseValue;
-row.dataset.status="pending";
-row.innerHTML='<div class="person"><div class="avatar">'+initials+'</div><div><strong>'+student+'</strong><span>Live student email pending data wiring</span></div></div><div class="course"><strong>'+courseName+'</strong><span>'+source+'</span></div><div class="date-cell">Today<small>Enrollment date</small></div><div><span class="status pending">NOT STARTED</span></div><div class="actions"><button class="action manage-btn">Manage</button><button class="action remove-btn">Remove</button></div>';
-list.prepend(row);closeModal();filter();alert("Enrollment created in the interface. Live database persistence will be connected during wiring.");
-};
-
-list.addEventListener("click",function(e){
-var row=e.target.closest(".enrollment-row");if(!row)return;
-if(e.target.classList.contains("remove-btn")){
-if(confirm("Remove this learner's course access?")){row.remove();filter();}
-}
-if(e.target.classList.contains("manage-btn")){
-alert("Enrollment management controls will connect to the live enrollment record during LMS wiring.");
-}
-});
-filter();
-})();
-</script>
+<script src="assets/js/admin-lms-enrollments.js"></script>
 </body>
 </html>
