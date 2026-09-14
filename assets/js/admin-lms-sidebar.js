@@ -229,11 +229,6 @@ bindUserDropdown();
           icon: "video"
         },
         {
-          label: "Students",
-          href: "admin-lms-students.html",
-          icon: "users"
-        },
-        {
           label: "Enrollments",
           href: "admin-lms-enrollments.html",
           icon: "clipboard"
