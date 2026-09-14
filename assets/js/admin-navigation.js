@@ -240,6 +240,7 @@ function getAdminNavigationMarkup() {
           >
             LMS Dashboard
           </a>
+          <a href="admin-lms-documents.html" class="admin-nav-link"><span>Learning Center Documents</span></a>
 
           <a
             href="${prefix}admin-lms-courses.html"
