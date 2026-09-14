@@ -33,6 +33,7 @@
     $('statusFilter')?.addEventListener('change',e=>{S.statusFilter=e.target.value;renderRows();});
     $('closeDetail')?.addEventListener('click',()=>{$('detail')?.classList.remove('show');});
     $('exportProgress')?.addEventListener('click',exportCsv);
+    $('rows')?.addEventListener('click',e=>{const b=e.target.closest('.invite-btn');if(b)sendAccountInvite(b.dataset.email,b.dataset.name,b);});
   }
 
   async function safe(table,queryBuilder){
@@ -109,9 +110,38 @@
   function renderRows(){
     const host=$('rows'),empty=$('empty');if(!host)return;
     const views=filteredViews();
-    host.innerHTML=views.map(v=>`<article class="progress-row" data-enrollment="${esc(v.e.id)}"><div class="person"><div class="avatar">${esc(initials(v.name))}</div><div><strong>${esc(v.name)}</strong><span>${esc(v.p.email||'No email on profile')}${v.p.company_name?` · ${esc(v.p.company_name)}`:''}</span></div></div><div class="course"><strong>${esc(v.c.title||'Course')}</strong><span>${v.lessonTotal?`${v.lessonDone} of ${v.lessonTotal} lessons completed`:(v.progress?`${Math.round(v.progress)}% reported by enrollment`:'No lesson activity yet')}</span></div><div class="bar-wrap"><div class="bar-top"><span>Course Progress</span><span>${Math.round(v.progress)}%</span></div><div class="bar"><i style="width:${clamp(v.progress)}%"></i></div></div><div class="activity">${esc(formatRelative(v.last))}<small>${v.status==='completed'?'Completed':'Last activity'}</small></div><div><span class="status ${esc(v.status)}">${esc(statusLabel(v.status))}</span></div><div class="actions"><button type="button" class="action detail-btn" data-id="${esc(v.e.id)}">Details</button></div></article>`).join('');
+    host.innerHTML=views.map(v=>`<article class="progress-row" data-enrollment="${esc(v.e.id)}"><div class="person"><div class="avatar">${esc(initials(v.name))}</div><div><strong>${esc(v.name)}</strong><span>${esc(v.p.email||'No email on profile')}${v.p.company_name?` · ${esc(v.p.company_name)}`:''}</span></div></div><div class="course"><strong>${esc(v.c.title||'Course')}</strong><span>${v.lessonTotal?`${v.lessonDone} of ${v.lessonTotal} lessons completed`:(v.progress?`${Math.round(v.progress)}% reported by enrollment`:'No lesson activity yet')}</span></div><div class="bar-wrap"><div class="bar-top"><span>Course Progress</span><span>${Math.round(v.progress)}%</span></div><div class="bar"><i style="width:${clamp(v.progress)}%"></i></div></div><div class="activity">${esc(formatRelative(v.last))}<small>${v.status==='completed'?'Completed':'Last activity'}</small></div><div><span class="status ${esc(v.status)}">${esc(statusLabel(v.status))}</span></div><div class="actions"><button type="button" class="action detail-btn" data-id="${esc(v.e.id)}">Details</button>${v.p.email?`<button type="button" class="action invite-btn" data-email="${esc(v.p.email)}" data-name="${esc(v.name)}">Send Account Invite</button>`:''}</div></article>`).join('');
     host.querySelectorAll('.detail-btn').forEach(b=>b.addEventListener('click',()=>openDetail(b.dataset.id)));
     if(empty)empty.style.display=views.length?'none':'block';setText('count',`Showing ${views.length} enrollment${views.length===1?'':'s'} across ${new Set(views.map(x=>x.e.user_id)).size} student${new Set(views.map(x=>x.e.user_id)).size===1?'':'s'}`);
+  }
+  async function sendAccountInvite(email,name,button){
+    if(!email)return;
+    const original=button?.textContent||'Send Account Invite';
+    try{
+      if(button){button.disabled=true;button.textContent='Sending…';}
+      const {data:sessionData,error:sessionError}=await db().auth.getSession();
+      if(sessionError)throw sessionError;
+      const token=sessionData?.session?.access_token;
+      if(!token)throw new Error('Your admin session has expired. Please sign in again.');
+      const base=String(window.SCREENINGS4U_SUPABASE_URL||'https://rgsrubdtljyxmnihwlah.supabase.co').replace(/\/$/,'');
+      const anon=window.SCREENINGS4U_SUPABASE_ANON_KEY||window.SUPABASE_ANON_KEY||'';
+      const r=await fetch(base+'/functions/v1/send-training-account-setup',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(anon?{'apikey':anon}:{})},body:JSON.stringify({email})});
+      const result=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(result.error||'Unable to send account invite.');
+      showNotice(`Account setup email sent to ${name||email} at ${email}.`,'success');
+      if(button)button.textContent='Invite Sent';
+      setTimeout(()=>{if(button){button.disabled=false;button.textContent='Resend Invite';}},2200);
+    }catch(e){
+      console.error('[LMS Progress Invite]',e);
+      showNotice(e?.message||'Unable to send account invite.','error');
+      if(button){button.disabled=false;button.textContent=original;}
+    }
+  }
+  function showNotice(message,type){
+    let n=$('progressNotice');
+    if(!n)return;
+    n.hidden=false;n.className='progress-notice '+(type||'');n.textContent=message;
+    clearTimeout(showNotice.timer);showNotice.timer=setTimeout(()=>{n.hidden=true;},6000);
   }
   function openDetail(id){
     const e=S.enrollments.find(x=>x.id===id);if(!e)return;const v=enrollmentView(e),host=$('moduleList');
